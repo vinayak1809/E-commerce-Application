@@ -3,6 +3,7 @@ const path = require("path");
 
 const router = express.Router();
 const rootDir = require("../util/path");
+const shopController = require("../controller/shopController");
 
 router.get("/add-product", (req, res, next) => {
   res.sendFile(path.join(rootDir, "views", "add-product.html"));
@@ -14,11 +15,7 @@ router.post("/add-product", (req, res, next) => {
   res.redirect("/");
 });
 
-router.get("/contact-us", (req, res, next) => {
-  res.sendFile(path.join(rootDir, "views", "contactus.html"));
-});
+router.get("/contact-us", shopController.contactUs);
+router.post("/success", shopController.success);
 
-router.post("/success", (req, res, next) => {
-  res.send("<h1>Form successfuly filled</h1>");
-});
 module.exports = router;
