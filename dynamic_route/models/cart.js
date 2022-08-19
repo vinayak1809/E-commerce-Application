@@ -11,13 +11,14 @@ module.exports = class cart {
   static addProduct(id, productPrice) {
     fs.readFile(p, (err, fileContent) => {
       let cart = { products: [], totalPrice: 0 };
-      // if (!err) {
-      //   cart = JSON.parse(fileContent);
-      // }
+      if (!err) {
+        cart = JSON.parse(fileContent);
+      }
 
       const existingProductIndex = cart.products.findIndex(
         (prod) => prod.id === id
       );
+      console.log(existingProductIndex, "ex");
       const existingProduct = cart.products[existingProductIndex];
       let updatedProduct;
       if (existingProduct) {
@@ -29,7 +30,8 @@ module.exports = class cart {
         updatedProduct = { id: id, qty: 1 };
         cart.products = [...cart.products, updatedProduct];
       }
-      cart.totalPrice = cart.totalPrice + productPrice;
+
+      cart.totalPrice = Number(cart.totalPrice) + Number(productPrice);
       fs.writeFile(p, JSON.stringify(cart), (err) => {
         console.log(err);
       });
