@@ -2,40 +2,77 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 
 exports.getProducts = (req, res, next) => {
-  Product.fetchAll()
-    .then(([rows, fieldData]) => {
-      // console.log(fieldData, "fielddata");
+  Product.findAll()
+    .then((products) => {
       res.render("shop/product-list", {
-        prods: rows,
+        prods: products,
         pageTitle: "All Products",
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => {
+      console.log(err);
+    });
+
+  //pure mysql
+  //   Product.fetchAll()
+  //     .then(([rows, fieldData]) => {
+  //       // console.log(fieldData, "fielddata");
+  //       res.render("shop/product-list", {
+  //         prods: rows,
+  //         pageTitle: "All Products",
+  //         path: "/products",
+  //       });
+  //     })
+  //     .catch((err) => console.log(err));
 };
 
 exports.getProduct = (req, res, next) => {
   const prodId = req.params.productId;
-  Product.findById(prodId)
+  Product.findAll({ where: { id: prodId } })
     .then((product) => {
-      console.log(product[0]);
       res.render("shop/product-detail", {
         product: product[0],
         pageTitle: product.title,
         path: "/products",
       });
     })
-    .catch((err) => console.log(err));
+    .catch((err) => "");
+  //in-built findbyid is not working
+  // Product.findById(prodId) //findById => builtin-method
+  //   .then((product) => {
+  //     //pure mysql
+  //     console.log(product, "product");
+  //     res.render("shop/product-detail", {
+  //       product: product, //pure mysql => product[0]
+  //       pageTitle: product.title,
+  //       path: "/products",
+  //     });
+  //   })
+  //   .catch((err) => "");
 };
 
 exports.getIndex = (req, res, next) => {
-  Product.fetchAll((products) => {
-    res.render("shop/index", {
-      prods: products,
-      pageTitle: "Shop",
-      path: "/",
+  //findAll method is in-built method provided by sequelize database
+  Product.findAll()
+    .then((products) => {
+      res.render("shop/index", {
+        prods: products,
+        pageTitle: "Shop",
+        path: "/",
+      });
+    })
+    .catch((err) => {
+      console.log(err);
     });
-  });
+  //pure mysql
+  // Product.fetchAll((products) => {
+  //   res.render("shop/index", {
+  //     prods: products,
+  //     pageTitle: "Shop",
+  //     path: "/",
+  //   });
+  // });
 };
 
 exports.getCart = (req, res, next) => {
