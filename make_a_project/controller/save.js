@@ -1,36 +1,55 @@
 // var usersList = document.getElementById("usersList");
 // const user = require("../../dynamic_route/routes/admin");
 var user = require("../model/user");
-const { use } = require("../routes/user_routes");
+// const user = require("../routes/user_routes");
+const axios = require("axios");
 
 exports.getUser = (req, res, next) => {
-  user.findAll().then((userInfo) => {
-    res.render("login-user", {
-      users: userInfo,
-      pageTitle: "Login",
-      path: "/login-user",
-      editing: false,
+  const data = axios
+    .get("https://crudcrud.com/api/1abe3f81ce0f4516b1616bed2c7c4d3f/data")
+    .then((user) => {
+      res.json(user.data);
     });
-  });
+  // user.findAll().then((userInfo) => {
+  //   res.render("login-user", {
+  //     users: userInfo,
+  //     pageTitle: "Login",
+  //     path: "/login-user",
+  //     editing: false,
+  //   });
+  // });
 };
 
 exports.postUser = (req, res, next) => {
   const name = req.body.username;
   const email = req.body.mail;
   const age = req.body.age;
-  user
-    .create({
-      name: name,
-      email: email,
-      age: age,
+
+  obj = {
+    name,
+    email,
+    age,
+  };
+
+  axios
+    .post("https://crudcrud.com/api/1abe3f81ce0f4516b1616bed2c7c4d3f/data", obj)
+    .then((response) => {
+      console.log(response);
     })
-    .then((result) => {
-      console.log(result, "result");
-      res.redirect("/login");
-    })
-    .catch((err) => {
-      console.log(err);
-    });
+    .catch((err) => console.log(err));
+  // user
+  //   .create({
+  //     name: name,
+  //     email: email,
+  //     age: age,
+  //   })
+  //   .then((result) => {
+  //     console.log(result, "result");
+  //     res.redirect("/login");
+  //   })
+  //   .catch((err) => {
+  //     console.log(err);
+  //   });
 };
 
 exports.deleteUser = (req, res, next) => {
