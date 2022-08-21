@@ -1,0 +1,34 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        <div class="container">
+            <form action="/login" method="POST">
+                <label for="name">Name: </label>
+                <input type="text" id="username" name="username"><br>
+
+                <label for="mail">Email: </label>
+                <input type="email" id="mail" name="mail"><br>
+
+                <label for="age">Age: </label>
+                <input type="text" id="age" name="age"><br>
+
+                <button type="submit">submit</button>
+            </form>
+            <ul id="usersList">
+                <% users %>
+                <% for (let user of users) { %>
+                    <li>
+                        <form action="/delete/<%= user.id %>" method="POST">
+                            <%= user.name %>-<%= user.age %>
+                            <button type="submit">Delete</button>
+                            <!-- <button id="<%= user.id %>">Edit</button> -->
+                        </form>
+                    </li>
+                <% } %>
+            </ul>
+        </div>
+
+    </body>
+</html>
