@@ -16,8 +16,11 @@ router.post("/add-product", adminController.postAddProduct);
 router.get("/edit-product/:productId", adminController.getEditProduct);
 router.post("/edit-product", adminController.postEditProduct);
 
+router.get("/user-product/:id", adminController.getSpecificUserProduct);
+
 router.post("/delete-product/:productId", adminController.deleteProduct);
 
+//shopController
 router.get("/cart", shopController.getCart);
 router.post("/cart", shopController.postCart);
 

@@ -13,6 +13,17 @@ exports.getAddProduct = (req, res, next) => {
   });
 };
 
+exports.getSpecificUserProduct = (req, res, next) => {
+  const idd = req.params.id;
+  console.log(idd, "idddd");
+  Product.findAll({ where: { userId: idd } })
+    .then((data) => {
+      res.json(data[0]);
+    })
+    .catch((err) => {
+      console.log(err);
+    });
+};
 exports.postAddProduct = (req, res, next) => {
   const title = req.body.title;
   const imageUrl = req.body.imageUrl;
