@@ -1,6 +1,6 @@
 const path = require("path");
-
 const express = require("express");
+const cors = require("cors");
 const bodyParser = require("body-parser");
 
 const errorController = require("./controllers/error");
@@ -13,8 +13,11 @@ app.set("views", "views");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
+// app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cors());
 
 const Product = require("./models/product");
 const User = require("./models/user");
@@ -61,7 +64,7 @@ sequelize
         // return user[0].createCart();
       })
       .then((cart) => {
-        app.listen(5000);
+        app.listen(2000);
       })
       .catch((err) => {
         console.log(err);

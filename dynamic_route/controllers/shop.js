@@ -1,9 +1,12 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
 
+const ITEMS_PER_PAGE = 1;
+
 exports.getProducts = (req, res, next) => {
   Product.findAll()
     .then((products) => {
+      // res.json(products);
       res.render("shop/product-list", {
         prods: products,
         pageTitle: "All Products",
@@ -53,18 +56,35 @@ exports.getProduct = (req, res, next) => {
 };
 
 exports.getIndex = (req, res, next) => {
-  //findAll method is in-built method provided by sequelize database
-  Product.findAll()
-    .then((products) => {
-      res.render("shop/index", {
-        prods: products,
-        pageTitle: "Shop",
-        path: "/",
-      });
+  const page = +req.query.page || 1; //converted string to number
+  let totalItems;
+
+  Product.findAll().then((numOfProducts) => {
+    totalItems = numOfProducts.length;
+    return Product.findAll({
+      offset: (page - 1) * ITEMS_PER_PAGE,
+      limit: ITEMS_PER_PAGE,
+      where: {},
     })
-    .catch((err) => {
-      console.log(err);
-    });
+      .then((products) => {
+        res.json(products);
+        // res.render("shop/index", {
+        //   prods: products,
+        //   pageTitle: "Shop",
+        //   path: "/",
+        //   currentPage: page,
+        //   hasNextPage: ITEMS_PER_PAGE * page < ITEMS_PER_PAGE,
+        //   hasPreviousPage: page > 1,
+        //   nextPage: page + 1,
+        //   previousPage: page - 1,
+        //   lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+        // });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  });
+
   //pure mysql
   // Product.fetchAll((products) => {
   //   res.render("shop/index", {
@@ -82,12 +102,17 @@ exports.getCart = (req, res, next) => {
       return cart
         .getProducts()
         .then((products) => {
-          console.log(products, products);
-          res.render("shop/cart", {
-            path: "/cart",
-            pageTitle: "Your Cart",
-            products: products[0],
-          });
+          const obj = [];
+          for (let i = 0; i < 2; i++) {
+            obj.push(products[i]);
+          }
+
+          res.json(obj);
+          // res.render("shop/cart", {
+          //   path: "/cart",
+          //   pageTitle: "Your Cart",
+          //   products: products[0],
+          // });
         })
         .catch((err) => console.log(err));
     })
@@ -99,7 +124,9 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
-  const prodId = req.body.productId;
+  console.log("postcart");
+  const prodId = req.params.productId;
+  // const prodId = req.query.productId;
 
   let newQuan = 1;
   let fetchedCart;
@@ -119,7 +146,7 @@ exports.postCart = (req, res, next) => {
         newQuan = oldQuant + 1;
         return product;
       }
-      return Product.findAll({ where: { id: prodId } });
+      return Product.findOne({ where: { id: prodId } });
     })
     .then((product) => {
       return fetchedCart.addProduct(product, {

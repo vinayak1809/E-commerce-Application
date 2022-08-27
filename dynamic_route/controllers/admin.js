@@ -15,7 +15,6 @@ exports.getAddProduct = (req, res, next) => {
 
 exports.getSpecificUserProduct = (req, res, next) => {
   const idd = req.params.id;
-  console.log(idd, "idddd");
   Product.findAll({ where: { userId: idd } })
     .then((data) => {
       res.json(data[0]);
