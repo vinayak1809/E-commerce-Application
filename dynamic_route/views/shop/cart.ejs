@@ -6,11 +6,20 @@
         <%- include('../includes/navigation.ejs') %>
         <%- include('../includes/end.ejs') %>
 
-        <%= products.price %>
-        <%= products.cartItem.quantity %>
+         <% for (let i = 0; i < 2; i++) { %> 
+            <%=  products[i].userId %>
+            <%=  products[i].title %>
+          total price <%=  products[i].cartItem.quantity  * products[i].price %> %>
+            <br>
+        <%  }  %>
 
-        <form action="/delete-item-from-cart" method="POST">
+        <!-- <form action="/delete-item-from-cart" method="POST">
 
             <input type="hidden" name="productId" value="<%=products.id %>">
             <button type="submit">Delete item</button>
+        </form> -->
+
+        <form action="/checkout/<%= products[0].cartItem.cartId %>" method="POST">
+            <input type="hidden" name="<%=products[0].cartItem.cartId %>" >
+            <button type="submit">checkout</button>
         </form>

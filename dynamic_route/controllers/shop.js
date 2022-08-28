@@ -1,5 +1,7 @@
 const Product = require("../models/product");
 const Cart = require("../models/cart");
+const Order = require("../models/order");
+const cartItems = require("../models/cart-Item");
 
 const ITEMS_PER_PAGE = 1;
 
@@ -67,18 +69,18 @@ exports.getIndex = (req, res, next) => {
       where: {},
     })
       .then((products) => {
-        res.json(products);
-        // res.render("shop/index", {
-        //   prods: products,
-        //   pageTitle: "Shop",
-        //   path: "/",
-        //   currentPage: page,
-        //   hasNextPage: ITEMS_PER_PAGE * page < ITEMS_PER_PAGE,
-        //   hasPreviousPage: page > 1,
-        //   nextPage: page + 1,
-        //   previousPage: page - 1,
-        //   lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
-        // });
+        // res.json(products);
+        res.render("shop/index", {
+          prods: products,
+          pageTitle: "Shop",
+          path: "/",
+          currentPage: page,
+          hasNextPage: ITEMS_PER_PAGE * page < ITEMS_PER_PAGE,
+          hasPreviousPage: page > 1,
+          nextPage: page + 1,
+          previousPage: page - 1,
+          lastPage: Math.ceil(totalItems / ITEMS_PER_PAGE),
+        });
       })
       .catch((err) => {
         console.log(err);
@@ -106,13 +108,12 @@ exports.getCart = (req, res, next) => {
           for (let i = 0; i < 2; i++) {
             obj.push(products[i]);
           }
-
-          res.json(obj);
-          // res.render("shop/cart", {
-          //   path: "/cart",
-          //   pageTitle: "Your Cart",
-          //   products: products[0],
-          // });
+          // res.send(obj[0]);
+          res.render("shop/cart", {
+            path: "/cart",
+            pageTitle: "Your Cart",
+            products: products,
+          });
         })
         .catch((err) => console.log(err));
     })
@@ -133,8 +134,10 @@ exports.postCart = (req, res, next) => {
   req.user
     .getCart()
     .then((cart) => {
-      fetchedCart = cart;
-      return cart.getProducts({ where: { id: prodId } });
+      if (cart) {
+        fetchedCart = cart;
+        return cart.getProducts({ where: { id: prodId } });
+      }
     })
     .then((products) => {
       let product;
@@ -207,9 +210,41 @@ exports.getOrders = (req, res, next) => {
   });
 };
 
-exports.getCheckout = (req, res, next) => {
-  res.render("shop/checkout", {
-    path: "/checkout",
-    pageTitle: "Checkout",
-  });
+exports.postCheckout = (req, res, next) => {
+  const cartId = req.params.cartId;
+  const totalPrice = req.body.totalPrice;
+
+  if (!totalPrice) {
+    return res
+      .status(400)
+      .json({ success: false, message: "missing total price" });
+  } else {
+    Order.findAll({ where: { cartId: cartId } }).then((result) => {
+      if (result.length == 0) {
+        Order.create({
+          totalPrice: totalPrice,
+          cartId: cartId,
+        }).then((result) => {
+          res.json({ order_id: result.id });
+        });
+      } else {
+        res.send("order already place");
+      }
+    });
+  }
+
+  // Cart.findAll({ where: { id: cartId } })
+  //   .then((result) => {
+  //     cartItems.findAll({ where: { cartId: result[0].id } }).then((result) => {
+  //       console.log(result);
+  //       res.json(result);
+  //     });
+  //   })
+
+  //   .catch((err) => console.log(err));
+
+  // res.render("shop/checkout", {
+  //   path: "/orders",
+  //   pageTitle: "Checkout",
+  // });
 };
