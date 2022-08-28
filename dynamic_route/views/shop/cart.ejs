@@ -9,7 +9,7 @@
          <% for (let i = 0; i < 2; i++) { %> 
             <%=  products[i].userId %>
             <%=  products[i].title %>
-          total price <%=  products[i].cartItem.quantity  * products[i].price %> %>
+            total price <%=  products[i].cartItem.quantity  * products[i].price %> %>
             <br>
         <%  }  %>
 
@@ -18,8 +18,9 @@
             <input type="hidden" name="productId" value="<%=products.id %>">
             <button type="submit">Delete item</button>
         </form> -->
-
+        <a href="/checkout"><button>checkout</button></a>
+<!-- 
         <form action="/checkout/<%= products[0].cartItem.cartId %>" method="POST">
             <input type="hidden" name="<%=products[0].cartItem.cartId %>" >
             <button type="submit">checkout</button>
-        </form>
+        </form> -->

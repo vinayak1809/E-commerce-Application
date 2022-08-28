@@ -2,6 +2,7 @@ const Product = require("../models/product");
 const Cart = require("../models/cart");
 const Order = require("../models/order");
 const cartItems = require("../models/cart-Item");
+const CartItem = require("../models/cart-Item");
 
 const ITEMS_PER_PAGE = 1;
 
@@ -204,47 +205,40 @@ exports.deleteFromCart = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  res.render("shop/orders", {
-    path: "/orders",
-    pageTitle: "Your Orders",
-  });
+  Order.findAll({ where: { userId: req.user.id } })
+    .then((orders) => {
+      let store_product = [];
+      orders.forEach((order) => {
+        store_product.push(order.productId);
+      });
+      return store_product;
+    })
+    .then((productIds) => {
+      Product.findAll({ where: { id: productIds } }).then((products) => {
+        res.render("shop/orders", {
+          path: "/orders",
+          pageTitle: "Your Orders",
+          products: products,
+        });
+      });
+    });
 };
 
-exports.postCheckout = (req, res, next) => {
-  const cartId = req.params.cartId;
-  const totalPrice = req.body.totalPrice;
-
-  if (!totalPrice) {
-    return res
-      .status(400)
-      .json({ success: false, message: "missing total price" });
-  } else {
-    Order.findAll({ where: { cartId: cartId } }).then((result) => {
-      if (result.length == 0) {
-        Order.create({
-          totalPrice: totalPrice,
-          cartId: cartId,
-        }).then((result) => {
-          res.json({ order_id: result.id });
+exports.Checkout = (req, res, next) => {
+  req.user
+    .getCart()
+    .then((result) => {
+      CartItem.findAll({ where: { cartId: result.id } }).then((result) => {
+        result.forEach((element) => {
+          Order.create({
+            totalPrice: 0,
+            userId: req.user.id,
+            productId: element.dataValues.productId,
+          });
         });
-      } else {
-        res.send("order already place");
-      }
+      });
+    })
+    .then((result) => {
+      res.redirect("/orders");
     });
-  }
-
-  // Cart.findAll({ where: { id: cartId } })
-  //   .then((result) => {
-  //     cartItems.findAll({ where: { cartId: result[0].id } }).then((result) => {
-  //       console.log(result);
-  //       res.json(result);
-  //     });
-  //   })
-
-  //   .catch((err) => console.log(err));
-
-  // res.render("shop/checkout", {
-  //   path: "/orders",
-  //   pageTitle: "Checkout",
-  // });
 };

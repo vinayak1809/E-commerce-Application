@@ -3,7 +3,17 @@
 
     <body>
         <%- include('../includes/navigation.ejs') %>
-        <main>
-            <h1>Nothing there!</h1>
-        </main>
+        <h2>Orders Placed</h2>
+        <% if (products) { %>
+            <% for (let product of products) { %>
+
+                <%= product.title %>
+                <br>
+            
+            <% } %>
+        <% }else{ %>
+            <main>
+                <h1>Nothing there!</h1>
+            </main>
+        <% } %>
         <%- include('../includes/end.ejs') %>

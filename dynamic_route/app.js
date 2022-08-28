@@ -50,7 +50,8 @@ Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
 
-Cart.hasOne(Order);
+User.belongsToMany(Product, { through: Order });
+Product.belongsToMany(User, { through: Order });
 
 const sequelize = require("./util/database");
 sequelize
