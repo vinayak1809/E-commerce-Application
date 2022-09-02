@@ -3,6 +3,9 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 
+const dotenv = require("dotenv");
+dotenv.config();
+
 const errorController = require("./controllers/error");
 
 const app = express();
@@ -15,6 +18,7 @@ const shopRoutes = require("./routes/shop");
 
 // app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+//A new body object containing the parsed data is populated on the request object after the middleware (i.e. req.body). This object will contain key-value pairs, where the value can be a string or array (when extended is false), or any type (when extended is true).
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
@@ -24,6 +28,7 @@ const User = require("./models/user");
 const Cart = require("./models/cart");
 const CartItem = require("./models/cart-Item");
 const Order = require("./models/order");
+const OrderDetails = require("./models/Order-Details");
 
 app.use((req, res, next) => {
   User.findAll({ where: { id: 2 } })
@@ -50,8 +55,10 @@ Cart.belongsTo(User);
 Cart.belongsToMany(Product, { through: CartItem });
 Product.belongsToMany(Cart, { through: CartItem });
 
-User.belongsToMany(Product, { through: Order });
-Product.belongsToMany(User, { through: Order });
+User.hasMany(Order);
+
+Order.belongsToMany(Product, { through: OrderDetails });
+Product.belongsTo(Order, { through: OrderDetails }); // this is also many-many relo but such a way that every product can be in number of orders, so it belongd to certain order
 
 const sequelize = require("./util/database");
 sequelize
@@ -60,13 +67,14 @@ sequelize
     User.findAll({ where: { id: 2 } })
       .then((user) => {
         if (user.length == 0) {
-          return User.create({ name: "rahul", email: "rahul@test.com" });
+          return User.create({ name: "virend", email: "virend@test.com" });
         }
         return user;
       })
       .then((user) => {
-        // console.log(user);
-        // return user[0].createCart();
+        if (user.length == 0) {
+          return user.createCart();
+        }
       })
       .then((cart) => {
         app.listen(2000);

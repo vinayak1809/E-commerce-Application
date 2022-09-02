@@ -3,6 +3,7 @@ const Cart = require("../models/cart");
 const Order = require("../models/order");
 const cartItems = require("../models/cart-Item");
 const CartItem = require("../models/cart-Item");
+const OrderDetails = require("../models/Order-Details");
 
 const ITEMS_PER_PAGE = 1;
 
@@ -66,11 +67,12 @@ exports.getIndex = (req, res, next) => {
     totalItems = numOfProducts.length;
     return Product.findAll({
       offset: (page - 1) * ITEMS_PER_PAGE,
-      limit: ITEMS_PER_PAGE,
+      limit: ITEMS_PER_PAGE, // items to load on specific page
       where: {},
     })
       .then((products) => {
         // res.json(products);
+        console.log(ITEMS_PER_PAGE * page < ITEMS_PER_PAGE);
         res.render("shop/index", {
           prods: products,
           pageTitle: "Shop",
@@ -109,12 +111,12 @@ exports.getCart = (req, res, next) => {
           for (let i = 0; i < 2; i++) {
             obj.push(products[i]);
           }
-          // res.send(obj[0]);
-          res.render("shop/cart", {
-            path: "/cart",
-            pageTitle: "Your Cart",
-            products: products,
-          });
+          res.json(obj);
+          // res.render("shop/cart", {
+          //   path: "/cart",
+          //   pageTitle: "Your Cart",
+          //   products: products,
+          // });
         })
         .catch((err) => console.log(err));
     })
@@ -126,7 +128,6 @@ exports.getCart = (req, res, next) => {
 };
 
 exports.postCart = (req, res, next) => {
-  console.log("postcart");
   const prodId = req.params.productId;
   // const prodId = req.query.productId;
 
@@ -205,40 +206,58 @@ exports.deleteFromCart = (req, res, next) => {
 };
 
 exports.getOrders = (req, res, next) => {
-  Order.findAll({ where: { userId: req.user.id } })
-    .then((orders) => {
-      let store_product = [];
-      orders.forEach((order) => {
-        store_product.push(order.productId);
-      });
-      return store_product;
-    })
-    .then((productIds) => {
-      Product.findAll({ where: { id: productIds } }).then((products) => {
-        res.render("shop/orders", {
-          path: "/orders",
-          pageTitle: "Your Orders",
-          products: products,
+  Order.findAll({ where: { userId: req.user.id } }).then((orders) => {
+    OrderDetails.findAll({ where: { orderId: orders[0].id } }).then(
+      (products) => {
+        let store_product = [];
+        products.forEach((product) => {
+          store_product.push(product.dataValues.productId);
         });
-      });
-    });
+        Product.findAll({ where: { id: store_product } }).then((products) => {
+          res.render("shop/orders", {
+            path: "/orders",
+            pageTitle: "Your Orders",
+            products: products,
+            username: req.user.name,
+          });
+        });
+      }
+    );
+  });
 };
 
 exports.Checkout = (req, res, next) => {
-  req.user
-    .getCart()
-    .then((result) => {
-      CartItem.findAll({ where: { cartId: result.id } }).then((result) => {
+  let storeit = [];
+  const totalPrice = req.body.totalPrice;
+  req.user.getCart().then((result) => {
+    CartItem.findAll({ where: { cartId: result.id } })
+      .then((result) => {
         result.forEach((element) => {
-          Order.create({
-            totalPrice: 0,
-            userId: req.user.id,
-            productId: element.dataValues.productId,
-          });
+          storeit.push(element.dataValues.productId);
+          // productId: element.dataValues,
+          return storeit;
+        });
+      })
+      .then((products) => {
+        Order.create({
+          totalPrice: totalPrice,
+          userId: req.user.id,
+          // productId: element.dataValues.productId,
+        }).then((order) => {
+          var details = [];
+          for (let i = 0; i < storeit.length; i++) {
+            var obj = {
+              orderId: order.id,
+              productId: storeit[i],
+            };
+            details.push(obj);
+          }
+          OrderDetails.bulkCreate(details, { returning: true }).then(
+            (result) => {
+              res.redirect("/orders");
+            }
+          );
         });
       });
-    })
-    .then((result) => {
-      res.redirect("/orders");
-    });
+  });
 };

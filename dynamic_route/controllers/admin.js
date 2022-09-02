@@ -138,7 +138,6 @@ exports.deleteProduct = (req, res, next) => {
       return product[0].destroy();
     })
     .then((result) => {
-      console.log("Updated Product");
       res.redirect("/admin/products");
     })
     .catch((err) => {
