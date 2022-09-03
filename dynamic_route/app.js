@@ -44,6 +44,11 @@ app.use(shopRoutes);
 
 app.use(errorController.get404);
 
+app.use((req, res) => {
+  console.log("urllllll", req.url);
+  res.sendFile(path.join(__dirname, `public/index.html`));
+});
+
 Product.belongsTo(User, { constraints: true, onDelete: "CASCADE" }); // if user is deleted he will lose all of hos products
 // User.hasMany(Product); // same meaning as above code
 //these relations are also called associations => more to know =>https://sequelize.org/docs/v6/core-concepts/assocs/

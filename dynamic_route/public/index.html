@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/css/index.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    <title>E-Commerce</title>
+</head>
+<body>
+    <main>
+        <nav>
+            <ul>
+                <button class="btn home"><a href="./index.html">Home</a></button>
+                <button class="btn store"><a href="/store">Store</a></button>
+                <button class="btn about"><a href="./about.html">About</a></button>
+            </ul>
+            <a href="http://localhost:2000/orders">Orders</a>
+            <div class="cart">
+                <button onclick="showCart()">cart</button>
+                <p id="no._of_items">0</p>
+            </div>
+        </nav>
+        <header><p> The Generics</p></header>
+        
+        <section class="music">
+        <span class="title"><p> Music </p></span>
+            <div onclick="addtocart(event)" class="music-category" id="items">
+                <div class="album album-1" id="album-1">
+                    <h5>Album 1</h5>
+                    <img src="./static/images/Album 1.png" alt="Album 1">
+                    <div class="price-cart">
+                        <p class="price">$12.99</p>
+                        <button class="add-to-cart" id="album-1">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="album album-2" id="album-2">
+                    <h5>Album 2</h5>
+                    <img src="./static/images/Album 2.png" alt="Album 2">
+                    <div class="price-cart">
+                        <p class="price">$19.99</p>
+                        <button class="add-to-cart" id="album-2">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="album album-3" id="album-3">
+                    <h5>Album 3</h5>
+                    <img src="./static/images/Album 3.png" alt="Album 3">
+                    <div class="price-cart">
+                        <p class="price">$12.99</p>
+                        <button class="add-to-cart" id="album-3">Add to Cart</button>
+                    </div>
+                </div>
+                <!-- <div class="album album-4" id="album-4">
+                    <h5>Album 4</h5>
+                    <img src="./static/images/Album 4.png" alt="Album 4">
+                    <div class="price-cart">
+                        <p class="price">$10.99</p>
+                        <button class="add-to-cart" id="album-4">Add to Cart</button>
+                    </div>
+                </div> -->
+            </div>
+        </section>
+
+        <section class="merch">
+        <span class="title"><p> Merch </p></span>
+            <div class="merch-category">
+                <div class="merches tshirt">
+                    <h5>T-Shirt</h5>
+                    <img src="./static/images/Shirt.png" alt="t-shirt">
+                    <div class="price-cart">
+                        <p class="price">$10.99</p>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+                <div class="merches coffe-cup">
+                    <h5>Coffee Cup</h5>
+                    <img src="./static/images/Coffee.png" alt="Coffee Cup">
+                    <div class="price-cart">
+                        <p class="price">$10.99</p>
+                        <button class="add-to-cart">Add to Cart</button>
+                    </div>
+                </div>
+            </div>
+
+            <span><button class="see-the-cart">See the cart</button></span>
+        </section>
+
+        <footer class="bottom">
+            <div><h1>The Generics</h1></div>
+            <div class="socials">
+                <a href="#"><span class="material-symbols-outlined">
+                    youtube_searched_for
+                    </span></a>
+                <a href="#"><span class="material-symbols-outlined">
+                    headphones
+                    </span></a>
+                <a href="#"><span class="material-symbols-outlined">
+                    public
+                    </span></a>
+            </div>
+        </footer>
+    </main>
+
+    <section class="cart-section">
+        <button onclick="closeCart()" class="close">X</button>
+        <span class="cart-section-title"><p> Cart </p></span>
+        <div class="carousel">
+           
+            <button class="carousel__button previous" id="previous"> < </button>
+            <div class="carousel__images" id="quantity">
+                <div>
+                    <img class="active" src="https://images.unsplash.com/photo-1626970929048-0337093cfaf0?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=869&q=80"  alt="">
+                    <h3>product 1 </h3>
+                    <p>$20.00</p>
+                    <!-- <p id="quan">quantityaaaaaa</p> -->
+                </div>
+            </div>
+            <button class="carousel__button next" id="next">></button>
+        </div>
+        <span class="total">
+            <p class="1">Total:</p>
+            <p class="2" id="total"></p>
+        </span>
+
+        <form id="form" method="POST">
+            <input type="hidden" name="<%=products[0].userId %>" >
+            <input type="hidden" id="totalPrice" name="totalPrice">
+             <span><button type="submit">CHECKOUT</button></span>
+        </form>
+
+    </section>
+
+    <section id="notification"></section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.19.0/axios.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>
+
+
+What is a server?
+server is used to handle specific functions/ to serve whatever user asks for
+
+
+
+2. What are the different steps for deploying AWS?
+
+
+
+signup and sign in to aws
+move all confidential information to .env file and never push that file on github
+lauch EC2 instance
+configure EC2 instance server
+upload the code and test it
+
+
+3. What is an EC2 instance?
+
+	EC2 instance provides virtual server to producer where he can run the application and launch it publically for users
+
+
+
+ 
+

@@ -9,6 +9,7 @@ exports.getAddProducts = (req, res, next) => {
     activeAddProduct: true,
   });
 };
+
 var body = [];
 exports.postAddProducts = (req, res, next) => {
   const product1 = new productModel(req.body.title);
