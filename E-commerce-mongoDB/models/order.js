@@ -1,15 +1,11 @@
-//const Sequelize = require('sequelize');
-//
-//const sequelize = require('../util/database');
-//
-//const Order = sequelize.define('order', {
-//  id: {
-//    type: Sequelize.INTEGER,
-//    autoIncrement: true,
-//    allowNull: false,
-//    primaryKey: true
-//  }
-//});
-//
-//module.exports = Order;
-//
+const mongoDB = require("mongodb");
+const getDb = require("../util/database").getDb;
+
+class Order {
+  constructor(userId, items) {
+    this.userId = userId;
+    this.items = items;
+  }
+}
+
+module.exports = Order;
