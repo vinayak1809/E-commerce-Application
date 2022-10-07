@@ -7,7 +7,7 @@ const mongoose = require("mongoose");
 
 dotenv.config();
 const errorController = require("./controllers/error");
-const mongooseConnect = require("./util/database").mongooseConnect;
+
 const User = require("./models/user");
 
 const app = express();
@@ -21,14 +21,14 @@ const shopRoutes = require("./routes/shop");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
-//app.use((req, res, next) => {
-//  User.findUserById("633c487ff10bc8532b8a89bd")
-//    .then((user) => {
-//      req.user = new User(user.name, user.email, "", user.cart, user._id);
-//      next();
-//    })
-//    .catch((err) => console.log(err));
-//});
+app.use((req, res, next) => {
+  User.findById("633fd8ff5545ea61b958e18c")
+    .then((user) => {
+      req.user = user;
+      next();
+    })
+    .catch((err) => console.log(err));
+});
 
 app.use("/admin", adminRoutes);
 app.use(shopRoutes);
@@ -39,6 +39,12 @@ mongoose
     "mongodb+srv://Vinayak:rishabh3195@cluster0.pkv2lh5.mongodb.net/shop?retryWrites=true&w=majority"
   )
   .then(() => {
+    //const user = new User({
+    //  name: "vk",
+    //  email: "vk18@gmail.com",
+    //  cart: { items: [] },
+    //});
+    //user.save();
     app.listen(2000);
   })
   .catch((err) => {

@@ -3,7 +3,10 @@ const mongoose = require("mongoose");
 
 exports.getProducts = (req, res, next) => {
   Product.find()
+    // .select("title price")
+    .populate("userId", "name") //show the name field from usertable
     .then((products) => {
+      console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
@@ -31,6 +34,7 @@ exports.postAddProduct = (req, res, next) => {
     price: price,
     description: description,
     imageURL: imageUrl,
+    userId: req.user,
   });
 
   product
