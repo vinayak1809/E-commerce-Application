@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const Schema = mongoose.Schema;
+const Product = require("./product");
 
 const userSchema = new Schema({
   name: {
@@ -23,6 +24,50 @@ const userSchema = new Schema({
     ],
   },
 });
+
+userSchema.methods.getCart = function (product) {
+  const productIds = this.cart.items.map((i) => {
+    return i.productId;
+  });
+  console.log(productIds, "productIds");
+  Product.find({ _id: { $in: productIds } })
+  .then((products) => {
+    return products.map((p) => {
+      return {
+        ...p,
+        quantity: this.cart.items.find((i) => {
+          return i.productId.toString() === p._id.toString();
+        }).quantity,
+      };
+    });
+  });
+};
+
+userSchema.methods.addToCart = function (product) {
+  const cartProduct = this.cart.items.findIndex((cp) => {
+    if (this.cart.items > 0) {
+      return cp.productId.toString() === product._id.toString();
+    }
+  });
+
+  let newQuantity = 1;
+  const updatedCartItems = [...this.cart.items];
+
+  if (cartProduct >= 0) {
+    newQuantity = this.cart.items[cartProduct].quantity + 1;
+    updatedCartItems[cartProduct].quantity = newQuantity;
+  } else {
+    updatedCartItems.push({
+      productId: product._id,
+      quantity: newQuantity,
+    });
+  }
+  const updatedCart = {
+    items: updatedCartItems,
+  };
+  this.cart = updatedCart;
+  return this.save();
+};
 
 module.exports = mongoose.model("User", userSchema);
 //const mongoDB = require("mongodb");
