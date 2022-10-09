@@ -83,14 +83,34 @@ exports.postCartDeleteProduct = (req, res, next) => {
 };
 
 exports.postOrder = (req, res, next) => {
-  req.user.placeOrder().then(() => {
-    res.redirect("/orders");
-  });
+  req.user
+    .populate("cart.items.productId")
+    .then((user) => {
+      const products = user.cart.items.map((i) => {
+        return { product: { ...i.productId._doc }, quantity: i.quantity };
+      });
+
+      const order = new Order({
+        products: products,
+        user: {
+          name: req.user.name,
+          userId: req.user,
+        },
+      });
+
+      return order.save();
+    })
+    .then(() => {
+      return req.user.clearCart();
+    })
+    .then(() => {
+      res.redirect("/orders");
+    });
 };
 
 exports.getOrders = (req, res, next) => {
-  req.user.getOrders().then((orders) => {
-    console.log(orders);
+  Order.find({ "user.userId": req.user._id }).then((orders) => {
+    console.log(orders, "orders");
     res.render("shop/orders", {
       path: "/orders",
       pageTitle: "Your Orders",

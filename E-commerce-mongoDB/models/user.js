@@ -29,9 +29,7 @@ userSchema.methods.getCart = function (product) {
   const productIds = this.cart.items.map((i) => {
     return i.productId;
   });
-  console.log(productIds, "productIds");
-  Product.find({ _id: { $in: productIds } })
-  .then((products) => {
+  Product.find({ _id: { $in: productIds } }).then((products) => {
     return products.map((p) => {
       return {
         ...p,
@@ -68,7 +66,10 @@ userSchema.methods.addToCart = function (product) {
   this.cart = updatedCart;
   return this.save();
 };
-
+userSchema.methods.clearCart = function () {
+  this.cart = { items: [] };
+  return this.save();
+};
 module.exports = mongoose.model("User", userSchema);
 //const mongoDB = require("mongodb");
 //const getDb = require("../util/database").getDb;
