@@ -6,7 +6,6 @@ exports.getProducts = (req, res, next) => {
     // .select("title price")
     .populate("userId", "name") //show the name field from usertable
     .then((products) => {
-      console.log(products);
       res.render("admin/products", {
         prods: products,
         pageTitle: "Admin Products",
